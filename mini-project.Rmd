@@ -36,7 +36,7 @@ Your task has the following requirements:
 
 **Requirement 2**: Save the data in folder for your project and read the data into R. Be sure to add the code to do so to your RMarkdown document.
 
-**Requirement 3**: Answer at least two questions of the data. These questions are up to you and can come from your reading of the background material, exploratory analysis of the data, individual interests, hunches, or anything else. Please write out these questions in your R Markdown document as plain test. 
+**Requirement 3**: Answer at least two questions of the data. These questions are up to you and can come from your reading of the background material, exploratory analysis of the data, individual interests, hunches, or anything else. Please write out these questions in your R Markdown document as plain text. 
 
 **Requirement 4**: Include code to provide output that you can use to answer your questions.
 

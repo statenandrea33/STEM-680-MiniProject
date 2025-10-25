@@ -11,11 +11,89 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## R Markdown
 
+# Loading packages.
 ```{r}
 library(readr)
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
 ```
 
+# Reading in data.
 ```{r}
-tenn <- read.csv("Teacher_Core_School_Consolidated_Supressed_2023.csv")
+tenn <- read.csv("Teacher_Core_School_Consolidated_Suppressed_2023.csv")
 ```
 
+# Answer at least two questions of the data. 
+
+## What district has the best response rate to the prompt "I would recommend this school to parents seeking a place for their child"? I am interested in this because I feel like the willingness to answer this is very telling of how each district feels to the teachers.
+
+## I would like to find the top 10 worst schools in the state when it comes to how the teachers feel about their leader. Specifically, the prompt, "My school’s leader regularly models effective instruction.". I feel like if the teachers do not feel like a leader is representing well, it can have negative effects for the rest of the survey."
+
+
+## Filtering to the prompt I am interested in.
+```{r}
+recommend_prompt <- tenn %>% 
+  filter(Prompt == "I would recommend this school to parents seeking a place for their child.")
+```
+
+## Grouping by district name and filterting to find the best response rate.
+```{r}
+highest_response_by_district <- recommend_prompt %>% 
+  group_by(District) %>% 
+  summarise(max_response = max(Response.Rate)) %>% 
+  arrange(desc(max_response))
+```
+
+## So the school district with the best response rate is Lexington, with a lot of close seconds at 98%.The worst response rate district is a tie with Polk County and South Carroll SSD.
+
+## Preparing data for my second question.
+```{r}
+leader_prompt <- tenn %>% 
+  filter(Prompt == "My school’s leader regularly models effective instruction.") %>% 
+  select(District, School, Prompt, Strongly.Agree, Agree, Disagree, Strongly.Disagree)
+```
+
+## Ranking the worst schools by the Strongly Disagree column.
+```{r}
+leader_ranking <- leader_prompt %>% 
+  mutate(Strongly.Disagree = as.numeric(gsub("%", "", Strongly.Disagree))) %>% 
+  arrange(desc(Strongly.Disagree)) %>% 
+  mutate(Rank = rank(-Strongly.Disagree, ties.method = "min")) %>% 
+  select(District, School, Strongly.Disagree, Rank)
+```
+
+## Displaying the worst 10 schools in terms of these beliefs.
+```{r}
+worst10 <- leader_ranking %>% 
+  slice_head(n = 10)
+
+print(worst10)
+```
+
+## Ignoring the tied schools the top 10 worst schools are seen above. I find it very interesting that a lot of the schools that think this way are elementary schools. Also, two of the schools are in Knox County school district.
+
+## Visualizing these 10 schools using ggplot2.
+```{r}
+ggplot(worst10, aes(x = reorder(School, Strongly.Disagree),
+                    y = Strongly.Disagree,
+                    fill = District)) +
+  geom_col() +
+  coord_flip() +
+  labs(
+    title = "The 10 Worst Schools by Stongly Disagree Percentage",
+    x = "School",
+    y = "Strongly Disagree (%)"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    legend.position = "bottom"
+  )
+```
+
+
+## This visualization shows how much of a outlier West Haven Elementary school is compared to the other nine schools.
+
+
+## I enjoyed this assignment I think it challenged me to come up with my own questions. Especially taking what I have learned this far and deciding what would work best to find the answers to these questions. One challenge I found was with the first question the percentages are a character, this is why Lexington with 100% is at the bottom even though I ordered it in descending order. I tried changing this to a numeric column, but found that it made a lot of the schools that had 98% a 100% falsley. I also would like to add a disclaimer here that I did use AI to assist with the ggplot a little bit. The base understanding of ggplot was my creation, I just wanted to expand on it further and used AI to help do this.
