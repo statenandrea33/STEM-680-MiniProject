@@ -1,0 +1,21 @@
+---
+title: "Mini-Project-Staten"
+author: "Andrea Staten"
+date: "2025-10-25"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+library(readr)
+```
+
+```{r}
+tenn <- read.csv("Teacher_Core_School_Consolidated_Supressed_2023.csv")
+```
+
